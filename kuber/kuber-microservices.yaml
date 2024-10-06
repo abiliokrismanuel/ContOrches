@@ -25,6 +25,7 @@ metadata:
   labels:
     app: currencyservice
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: currencyservice
@@ -91,6 +92,7 @@ metadata:
   labels:
     app: productcatalogservice
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: productcatalogservice
@@ -155,6 +157,7 @@ metadata:
   labels:
     app: checkoutservice
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: checkoutservice
@@ -230,6 +233,7 @@ metadata:
   labels:
     app: shippingservice
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: shippingservice
@@ -294,6 +298,7 @@ metadata:
   labels:
     app: cartservice
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: cartservice
@@ -361,6 +366,7 @@ metadata:
   labels:
     app: redis-cart
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: redis-cart
@@ -489,6 +495,7 @@ metadata:
   labels:
     app: paymentservice
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: paymentservice
@@ -553,6 +560,7 @@ metadata:
   labels:
     app: frontend
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: frontend
@@ -672,6 +680,7 @@ metadata:
   labels:
     app: recommendationservice
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: recommendationservice
@@ -740,6 +749,7 @@ metadata:
   labels:
     app: adservice
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: adservice
@@ -801,7 +811,3 @@ kind: ServiceAccount
 metadata:
   name: adservice
 # [END gke_release_kubernetes_manifests_microservices_demo]
-
-# cadvisor
-
-# node-exporter
