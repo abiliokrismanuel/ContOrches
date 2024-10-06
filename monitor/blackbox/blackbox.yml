@@ -1,6 +1,76 @@
 modules:
-  http_2xx:
+  # GET Request untuk halaman utama
+  index_page:
     prober: http
     timeout: 5s
     http:
       method: GET
+      valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+      valid_status_codes: []  # Defaults to 2xx status codes
+
+  # POST Request untuk setCurrency
+  set_currency:
+    prober: http
+    timeout: 5s
+    http:
+      method: POST
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+      body: 'currency_code=USD'  # Atau EUR/JPY dll.
+      valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+      valid_status_codes: []  # Defaults to 2xx status codes
+
+        # GET Request untuk produk acak
+  browse_product:
+    prober: http
+    timeout: 5s
+    http:
+     method: GET
+     valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+     valid_status_codes: []  # Defaults to 2xx status codes
+       # url: "/product/0PUK6V6EV0"  # Atur product_id secara manual
+
+  # GET Request untuk viewCart
+  view_cart:
+    prober: http
+    timeout: 5s
+    http:
+      method: GET
+      valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+      valid_status_codes: []  # Defaults to 2xx status codes
+
+  # POST Request untuk addToCart
+  add_to_cart:
+    prober: http
+    timeout: 5s
+    http:
+      method: POST
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+      body: 'product_id=0PUK6V6EV0&quantity=2'  # Atur product_id dan quantity
+      valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+      valid_status_codes: []  # Defaults to 2xx status codes
+
+  # POST Request untuk empty_cart
+  empty_cart:
+    prober: http
+    timeout: 5s
+    http:
+      method: POST
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+      body: ''  # Tidak ada body untuk request ini
+      valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+      valid_status_codes: []  # Defaults to 2xx status codes
+
+  # POST Request untuk checkout
+  checkout:
+    prober: http
+    timeout: 5s
+    http:
+      method: POST
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+      body: 'email=test@example.com&street_address=123 Main St&zip_code=12345&city=Test City&state=TX&country=USA&credit_card_number=4111111111111111&credit_card_expiration_month=12&credit_card_expiration_year=2030&credit_card_cvv=123'
+      valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+      valid_status_codes: []  # Defaults to 2xx status codes

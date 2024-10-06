@@ -35,7 +35,7 @@ services:
       - GF_REMOTE_CACHE_TYPE=redis
       - GF_REMOTE_CACHE_CONNSTR=addr=redis:6379,pool_size=100,db=0,ssl=false
     volumes:
-      - grafana-data:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
 
   prometheus:
     image: prom/prometheus
