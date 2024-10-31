@@ -32,7 +32,7 @@ services:
   frontend:
     container_name: frontend
     environment:
-    - PORT=8080
+    - PORT=8082
     - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:3550
     - CURRENCY_SERVICE_ADDR=currencyservice:7000
     - CART_SERVICE_ADDR=cartservice:7070
@@ -44,7 +44,7 @@ services:
     - ENABLE_PROFILER=0
     image: gcr.io/google-samples/microservices-demo/frontend:v0.10.1
     ports:
-    - '8080'
+    - '8082'
     networks:
     - web
     deploy:

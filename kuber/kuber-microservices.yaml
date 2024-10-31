@@ -42,7 +42,7 @@ spec:
         runAsNonRoot: true
         runAsUser: 1000
       containers:
-      - name: server
+      - name: currencyservice
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -57,6 +57,8 @@ spec:
         env:
         - name: PORT
           value: "7000"
+        - name: DISABLE_PROFILER
+          value: "1"
         readinessProbe:
           grpc:
             port: 7000
@@ -429,6 +431,7 @@ metadata:
   labels:
     app: emailservice
 spec:
+  replicas: 3 #menambah replikasi 3
   selector:
     matchLabels:
       app: emailservice
@@ -526,6 +529,8 @@ spec:
         env:
         - name: PORT
           value: "50051"
+        - name: DISABLE_PROFILER
+          value: "1"
         readinessProbe:
           grpc:
             port: 50051
@@ -588,12 +593,12 @@ spec:
             readOnlyRootFilesystem: true
           image: gcr.io/google-samples/microservices-demo/frontend:v0.10.1
           ports:
-          - containerPort: 8080
+          - containerPort: 8082
           readinessProbe:
             initialDelaySeconds: 10
             httpGet:
               path: "/_healthz"
-              port: 8080
+              port: 8082
               httpHeaders:
               - name: "Cookie"
                 value: "shop_session-id=x-readiness-probe"
@@ -601,13 +606,13 @@ spec:
             initialDelaySeconds: 10
             httpGet:
               path: "/_healthz"
-              port: 8080
+              port: 8082
               httpHeaders:
               - name: "Cookie"
                 value: "shop_session-id=x-liveness-probe"
           env:
           - name: PORT
-            value: "8080"
+            value: "8082"
           - name: PRODUCT_CATALOG_SERVICE_ADDR
             value: "productcatalogservice:3550"
           - name: CURRENCY_SERVICE_ADDR
@@ -650,23 +655,23 @@ spec:
     app: frontend
   ports:
   - name: http
-    port: 80
-    targetPort: 8080
+    port: 8082
+    targetPort: 8082
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: frontend-external
-  labels:
-    app: frontend
-spec:
-  type: LoadBalancer
-  selector:
-    app: frontend
-  ports:
-  - name: http
-    port: 80
-    targetPort: 8080
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: frontend-external
+#   labels:
+#     app: frontend
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app: frontend
+#   ports:
+#   - name: http
+#     port: 80
+#     targetPort: 8080
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -697,7 +702,7 @@ spec:
         runAsNonRoot: true
         runAsUser: 1000
       containers:
-      - name: server
+      - name: recommendationservice
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -766,7 +771,7 @@ spec:
         runAsNonRoot: true
         runAsUser: 1000
       containers:
-      - name: server
+      - name: adservice
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

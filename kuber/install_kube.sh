@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Swap off jika Kubernetes dipasang di VM atau disk tradisional
-#swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
+swapoff -a && sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
 # Konfigurasi modul untuk loading persisten
-cat <<EOF | tee /etc/modules-load.d/containerd.conf
+cat <<EOF | tee /etc/modules-load.d/k8s.conf
 overlay
 br_netfilter
 EOF
@@ -14,7 +14,7 @@ modprobe overlay
 modprobe br_netfilter
 
 # Update pengaturan iptables
-cat <<EOF | tee /etc/sysctl.d/kubernetes.conf
+cat <<EOF | tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1

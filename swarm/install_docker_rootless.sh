@@ -20,6 +20,10 @@ echo "Menginstall Docker..."
 sudo apt update
 sudo apt install docker-ce -y
 
+# Langkah 5: Install Docker Rootless dependencies
+echo "Menginstall dependencies Docker Rootless..."
+sudo apt install -y dbus-user-session uidmap
+
 # Langkah 6: Install Docker Compose versi 2.29.2
 echo "Menginstall Docker Compose versi 2.29.2..."
 sudo curl -L "https://github.com/docker/compose/releases/download/2.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -39,7 +43,22 @@ sudo sysctl -w vm.overcommit_memory=1
 sudo sh -c 'echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf'
 sudo sysctl -p
 
-# Langkah 5 (Opsional): Izinkan user saat ini menjalankan perintah Docker tanpa sudo
+# Langkah 10: Install Docker Rootless
+echo "Menginstall Docker Rootless..."
+dockerd-rootless-setuptool.sh install
+
+# Langkah 11: Set environment variables untuk Docker Rootless
+echo "Menambahkan environment variables untuk Docker Rootless ke .bashrc..."
+echo 'export PATH=/usr/bin:$PATH' >> ~/.bashrc
+echo 'export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock' >> ~/.bashrc
+source ~/.bashrc
+
+# Langkah 12: Verifikasi Docker Rootless
+echo "Memverifikasi Docker Rootless..."
+docker context use rootless
+docker info
+
+# Langkah 13 (Opsional): Izinkan user saat ini menjalankan perintah Docker tanpa sudo
 echo "Menambahkan user saat ini ke grup Docker..."
 sudo usermod -aG docker ${USER}
 

@@ -1,3 +1,6 @@
+#kubectl taint nodes --all  node-role.kubernetes.io/control-plane-
+---
+# DaemonSet untuk cAdvisor
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -13,60 +16,63 @@ spec:
       labels:
         app: cadvisor
     spec:
+      tolerations: # toleransi untuk nginx berjalan di control plane
+      - key: "control-plane"
+        operator: "Equal"
+        value: ""
+        effect: "NoSchedule"
       containers:
       - name: cadvisor
         image: gcr.io/cadvisor/cadvisor:latest
         ports:
         - containerPort: 8080
-        resources:
-          limits:
-            cpu: 200m
-            memory: 512Mi
-          requests:
-            cpu: 100m
-            memory: 256Mi
         volumeMounts:
-        - name: cgroup
-          mountPath: /cgroup
+        - name: rootfs
+          mountPath: /rootfs
+          readOnly: false
         - name: var-run
           mountPath: /var/run
-        - name: var-lib-docker
-          mountPath: /var/lib/docker
-        - name: var-lib-kubelet
-          mountPath: /var/lib/kubelet
+          readOnly: false
         - name: sys
           mountPath: /sys
+          readOnly: false
+        - name: docker
+          mountPath: /var/lib/docker
+          readOnly: false
+        - name: disk
+          mountPath: /dev/disk
+          readOnly: false
       volumes:
-      - name: cgroup
+      - name: rootfs
         hostPath:
-          path: /cgroup
+          path: /
       - name: var-run
         hostPath:
           path: /var/run
-      - name: var-lib-docker
-        hostPath:
-          path: /var/lib/docker
-      - name: var-lib-kubelet
-        hostPath:
-          path: /var/lib/kubelet
       - name: sys
         hostPath:
           path: /sys
+      - name: docker
+        hostPath:
+          path: /var/lib/docker
+      - name: disk
+        hostPath:
+          path: /dev/disk
 ---
+# Service untuk cAdvisor
 apiVersion: v1
 kind: Service
 metadata:
   name: cadvisor
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 8081         # Port yang dapat diakses
     targetPort: 8080   # Port di dalam container cAdvisor
+    nodePort: 30808
   selector:
     app: cadvisor
 ---
-
-
 # DaemonSet untuk Node Exporter
 apiVersion: apps/v1
 kind: DaemonSet
@@ -83,30 +89,27 @@ spec:
       labels:
         app: node-exporter
     spec:
+      tolerations: # toleransi untuk nginx berjalan di control plane
+      - key: "control-plane"
+        operator: "Equal"
+        value: ""
+        effect: "NoSchedule"
+      hostNetwork: true
       containers:
       - name: node-exporter
         image: quay.io/prometheus/node-exporter:latest
         ports:
         - containerPort: 9100
-        resources:
-          limits:
-            cpu: 100m
-            memory: 200Mi
-          requests:
-            cpu: 50m
-            memory: 100Mi
-      hostNetwork: true
-      # Node Exporter perlu akses ke host filesystem
-      volumeMounts:
-      - name: proc
-        mountPath: /host/proc
-        readOnly: true
-      - name: sys
-        mountPath: /host/sys
-        readOnly: true
-      - name: root
-        mountPath: /host/root
-        readOnly: true
+        volumeMounts:
+        - name: proc
+          mountPath: /host/proc
+          readOnly: true
+        - name: sys
+          mountPath: /host/sys
+          readOnly: true
+        - name: root
+          mountPath: /host/root
+          readOnly: true
       volumes:
       - name: proc
         hostPath:
@@ -124,9 +127,10 @@ kind: Service
 metadata:
   name: node-exporter
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 9100         # Port yang dapat diakses
     targetPort: 9100   # Port di dalam container Node Exporter
+    nodePort: 30910
   selector:
     app: node-exporter

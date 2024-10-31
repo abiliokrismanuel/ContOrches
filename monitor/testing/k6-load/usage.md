@@ -1,0 +1,1 @@
+# K6_PROMETHEUS_RW_URL=http://<container_prometheus>/api/v1/write k6 run --out experimental-prometheus-rw index.js
