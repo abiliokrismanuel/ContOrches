@@ -2,27 +2,36 @@ import http from "k6/http";
 import { check } from "k6";
 import { Rate, Trend } from "k6/metrics";
 
-// Custom metrics
 let errorRate = new Rate("errors");
 let responseTime = new Trend("response_time", true);
-let throughput = new Trend("throughput", true);
-let latency = new Trend("latency", true); // Latency metric
 
 export const options = {
-  vus: 1000, // jumlah koneksi (virtual users)
-  duration: "10s", // durasi pengujian
-  rps: 100, // request per detik
+  vus: 10000, // jumlah koneksi (virtual users)
+  duration: '10s',
 };
 
-export function index() {
-  let res = http.get("/", {
-    tags: { name: "index" },
+const BASE_URL = "<url>";
+
+export function testIndex() {
+  const testid = __ENV.TEST_ID || "docker-swarm-10000-con-inject-master1-worker1"; // Mengambil testid dari environment variable atau menggunakan default
+  
+  // Lakukan GET request ke Google
+  let res = http.get(`${BASE_URL}/`, {
+    tags: {
+      name: "test-index", // Menandai nama tes ini
+      testid: testid, // Tambahkan testid sebagai tag
+    }
   });
+
   check(res, {
-    "index status was 200": (r) => r.status === 200,
+    "status was 200": (r) => r.status === 200,
   });
+
   errorRate.add(res.status !== 200);
   responseTime.add(res.timings.duration);
-  latency.add(res.timings.waiting); // Add latency (time waiting for the response)
-  throughput.add(res.request.responseBody.length); // Menambahkan throughput
+}
+
+// Fungsi default yang akan dijalankan oleh k6
+export default function () {
+  testIndex();
 }

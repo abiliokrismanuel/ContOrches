@@ -2,15 +2,13 @@ import http from "k6/http";
 import { check } from "k6";
 import { Rate, Trend } from "k6/metrics";
 
+// Definisikan metrik
 let errorRate = new Rate("errors");
 let responseTime = new Trend("response_time", true);
-let throughput = new Trend("throughput", true);
-let latency = new Trend("latency", true); // Latency metric
 
 export const options = {
-  vus: 1000, // jumlah koneksi (virtual users)
+  vus: 10000, // jumlah koneksi (virtual users)
   duration: "10s", // durasi pengujian
-  rps: 100, // request per detik
 };
 
 const products = [
@@ -25,16 +23,32 @@ const products = [
   "OLJCESPC7Z",
 ];
 
+const BASE_URL = "<url>";
+
 export function browseProduct() {
+  const testid = __ENV.TEST_ID || "docker-swarm-browseproduk-10000-inject-worker1"; // Mengambil testid dari environment variable atau default
   const product = products[Math.floor(Math.random() * products.length)];
-  let res = http.get(`/product/${product}`, {
-    tags: { name: "browserProduct" },
+
+  // Lakukan GET request untuk melihat detail produk
+  let res = http.get(`${BASE_URL}/product/${product}`, {
+    tags: {
+      name: "browseProduct", // Nama tes
+      testid: testid, // Tambahkan testid sebagai tag
+    },
   });
+
+  // Periksa apakah statusnya 200
   check(res, {
     "browseProduct status was 200": (r) => r.status === 200,
   });
+
+  // Tambahkan metrik
   errorRate.add(res.status !== 200);
   responseTime.add(res.timings.duration);
-  latency.add(res.timings.waiting); // Add latency
-  throughput.add(res.request.responseBody.length);
+
+}
+
+// Fungsi default yang akan dijalankan oleh K6
+export default function () {
+  browseProduct();
 }

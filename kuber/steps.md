@@ -23,10 +23,8 @@ kubeadm token create --print-join-command
 https://github.com/nginxinc/kubernetes-ingress/tree/main
 
 # taint
-kubectl taint nodes --all node-role.kubernetes.io/control-plane
-
-# untaint
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+
 
 # flannel
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
@@ -34,7 +32,6 @@ kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/
 firewall-cmd --permanent --add-port=8285/udp # Flannel
 firewall-cmd --permanent --add-port=8472/udp # Flannel
 
-kubectl apply -f https://github.com/canonical/microk8s-core-addons/blob/main/addons/ingress/ingress.yaml
 # calico
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml
 
@@ -54,3 +51,6 @@ kubectl run -i --tty --rm debug --image=busybox --restart=Never -- sh
 rm -rf  /etc/cni/net.d/
 
 rm -rf $HOME/.kube/config
+
+# logs ingress
+kubectl logs -l app.kubernetes.io/name=ingress-nginx -n ingress-nginx --all-containers=true

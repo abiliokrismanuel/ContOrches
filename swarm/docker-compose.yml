@@ -183,7 +183,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./efs-docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /home/ubuntu/swarm/efs-docker/nginx.conf:/etc/nginx/nginx.conf:ro
+    environment:
+      - TZ=Asia/Jakarta
     networks:
       - web
     deploy:
