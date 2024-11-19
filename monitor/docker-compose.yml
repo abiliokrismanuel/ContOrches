@@ -33,8 +33,6 @@ services:
       - GF_SERVER_DOMAIN=localhost:80
       - GF_SERVER_ROOT_URL=https://${IP_A}:80/grafana/
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
-      - GF_REMOTE_CACHE_TYPE=redis
-      - GF_REMOTE_CACHE_CONNSTR=addr=redis:6379,pool_size=100,db=0,ssl=false
     volumes:
       - grafana-data:/var/lib/grafana
 
@@ -61,20 +59,6 @@ services:
     networks:
       - liownet
   
-  redis:
-    image: redis:latest
-    restart: always
-    ports:
-      - "6379"
-    volumes:
-      - "./redis/dаta:/data"
-      - "./redis/redis.conf:/usr/local/etc/redis/redis.conf"
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASS}
-      - REDIS_PORT=6379
-      - REDIS_DATABASES=16
-    networks:
-      - liownet
 
 volumes:
   grafana-data:

@@ -10,49 +10,88 @@ alerting:
     - targets:
       - 'alertmanager:9093'
 
+rule_files:
+  - 'alert.rules'
+
 scrape_configs:
  - job_name: prometheus
    static_configs:
     - targets:
        - prometheus:9090
-       
+
  - job_name: 'node-exporter-swarm'
    metrics_path: /metrics
    static_configs:
-     - targets: 
-       - 'Node1:9100'
-       - 'Node2:9100'
-       - 'Node3:9100'
-       - 'Node4:9100'
-       - 'Node5:9100'
-
- - job_name: 'cadvisor-swarm'
-   #metrics_path: /containers/
-   static_configs:
      - targets:
-       - 'Node1:8081'
-       - 'Node2:8081'
-       - 'Node3:8081'
-       - 'Node4:8081'
-       - 'Node5:8081'
+       - '54.145.24.79:30910'
+       labels:
+         node: 'swarm-master-1'
 
-#ganti port job kube ke nodeport
+     - targets:
+       - '34.228.212.75:30910'
+       labels:
+         node: 'swarm-master-2'
+
+     - targets:
+       - '44.199.209.87:30910'
+       labels:
+         node: 'swarm-master-3'
+
+     - targets:
+       - '52.90.228.186:30910'
+       labels:
+         node: 'swarm-worker-1'
+
+     - targets:
+       - '3.88.48.168:30910'
+       labels:
+         node: 'swarm-worker-2'
+
+#  - job_name: 'cadvisor-swarm'
+#    #metrics_path: /containers/
+#    static_configs:
+#      - targets:
+#        - '3.239.164.81:8081'
+#        - '52.87.141.4:8081'
+#        - '18.234.110.77:8081'
+#        - '98.80.189.229:8081'
+#        - '44.211.41.22:8081'
+
  - job_name: 'node-exporter-kube'
    metrics_path: /metrics
    static_configs:
-     - targets: 
-       - 'Node1:9100'
-       - 'Node2:9100'
-       - 'Node3:9100'
-       - 'Node4:9100'
-       - 'Node5:9100'
-
- - job_name: 'cadvisor-kube'
-   #metrics_path: /containers/
-   static_configs:
      - targets:
-       - 'Node1:8081'
-       - 'Node2:8081'
-       - 'Node3:8081'
-       - 'Node4:8081'
-       - 'Node5:8081'
+       - '54.145.24.79:30910'
+       labels:
+         node: 'kubernetes-master-1'
+
+     - targets:
+       - '34.228.212.75:30910'
+       labels:
+         node: 'kubernetes-master-2'
+
+     - targets:
+       - '44.199.209.87:30910'
+       labels:
+         node: 'kubernetes-master-3'
+
+     - targets:
+       - '52.90.228.186:30910'
+       labels:
+         node: 'kubernetes-worker-1'
+
+     - targets:
+       - '3.88.48.168:30910'
+       labels:
+         node: 'kubernetes-worker-2'
+
+#  - job_name: 'cadvisor-kube'
+#    #metrics_path: /containers/
+#    static_configs:
+#      - targets:
+#        - '3.83.4.87:30808'
+#        - '34.201.66.55:30808'
+#        - '34.230.21.193:30808'
+#        - '3.239.210.129:30808'
+#        - '54.84.175.255:30808'
+#          #- '3.219.219.191:30808'

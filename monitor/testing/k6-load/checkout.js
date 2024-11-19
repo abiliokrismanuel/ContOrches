@@ -5,11 +5,11 @@ import { Rate, Trend } from "k6/metrics";
 let errorRate = new Rate("errors");
 let responseTime = new Trend("response_time", true);
 
-const BASE_URL = "<url>"; // Ganti dengan URL dasar aplikasi Anda
+const BASE_URL = "http://kuber-alb-345915462.us-east-1.elb.amazonaws.com"; // Ganti dengan URL dasar aplikasi Anda
 
 export const options = {
-  vus: 10000, // jumlah koneksi (virtual users)
-  duration: "10s", // durasi pengujian
+  vus: 1, // jumlah koneksi (virtual users)
+  duration: "1s", // durasi pengujian
 };
 
 const products = [
@@ -36,25 +36,32 @@ function generateRandomData() {
 const selectedProduct = products[Math.floor(Math.random() * products.length)];
 
 export default function checkout() {
-  const testid = __ENV.TEST_ID || "docker-swarm-cekout-10000-inject-master1-worker1"; // Mengambil testid dari environment variable atau default
+  const testid = __ENV.TEST_ID || "docker-cekout-5000-inject-1worker"; // Mengambil testid dari environment variable atau default
   const { email, street_address } = generateRandomData();
 
   const payload = `email=${email}&street_address=${street_address}&zip_code=94043&city=Los Angeles&state=CA&country=USA&product_id=${selectedProduct}&credit_card_number=4432801561520454&credit_card_expiration_month=11&credit_card_expiration_year=2025&credit_card_cvv=123`;
 
   const headers = { "Content-Type": "application/x-www-form-urlencoded" };
 
-  let res = http.post(`${BASE_URL}/cart/checkout`, payload, { headers, tags: { name: "checkout" } });
+  let res = http.post(`${BASE_URL}/cart/checkout`, payload, {headers} );
 
   check(res, {
     "checkout status was 200": (r) => r.status === 200,
   });
 
-  // Log payload untuk melihat data yang dihasilkan
-  //console.log("Generated Payload:", payload);
 
+  // Log headers, cookies, and body for debugging
+  //console.log(`Response Headers: ${JSON.stringify(res.headers)}`);
+  //console.log(`Response Cookies: ${JSON.stringify(res.cookies)}`);
+  //console.log(`Response Body: ${res.body}`);
+  //console.log('=====================================================================================')
+
+  // Log payload dan respons untuk debugging
+  // console.log(`Payload: ${payload}`);
+  //console.log(`Response Status: ${res.status}`);
+  // console.log(`Response Body: ${res.body}`);
+  
   // Record error if status is not 200
   errorRate.add(res.status !== 200);
   
-  // Record response time, latency, and throughput
-  responseTime.add(res.timings.duration);
 }

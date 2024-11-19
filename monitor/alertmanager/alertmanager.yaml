@@ -1,62 +1,21 @@
 global:
+  #  resolve_timeout: 5m
 
 route:
+  group_by: ['alertname']
   receiver: 'slack'
 
 receivers:
   - name: 'slack'
     slack_configs:
-      - api_url: '<slack_api>'
-        channel: '<channel-slack>'
-        title: '{{ .CommonLabels.alertname }} - {{ .Status | toUpper }}'
-        text: |
-           *Alert:* {{ .CommonLabels.alertname }}
-           *Status:* {{ .Status }}
-           *Instance:* {{ .CommonLabels.instance }}
-           *Severity:* {{ .CommonLabels.severity }}
-
-           {{ range .Alerts }}
-             {{ if eq .Status "firing" }}
-               *Started at:* {{ .StartsAt }}
-             {{ else }}
-               *Ended at:* {{ .EndsAt }}
-             {{ end }}
-             *Description:* {{ .Annotations.description }}
-           {{ end }}
-        send_resolved: true
+      - api_url: <api_slack>
+        channel: '#skripsi'
+        send_resolved: true     # Kirim notifikasi juga saat alert sudah resolved
+        text: "<!channel> \nAlert Summary: {{ .CommonAnnotations.summary }}\nAlert Description: {{ .CommonAnnotations.description }}\nAll Data: {{ . }}"
 
 
-#https://github.com/prometheus/alertmanager/blob/main/template/default.tmpl
-templates:
-- /etc/alertmanager/slack.tmpl
 
-
-# groups:
-#   - name: example_alerts
-#     rules:
-#       - alert: ScrapeTargetDown
-#         expr: up != 1
-#         for: 5m
-#         labels:
-#           severity: warn
-#         annotations:
-#           summary: "Scrape target down"
-#           description: "*Details:* The scrape target *{{ .Labels.job }}* on host *{{ .Labels.instance }}* is down."
-
-#       - alert: NodeDown
-#         expr: up{job="node-exporter"} == 0
-#         for: 5m
-#         labels:
-#           severity: critical
-#         annotations:
-#           summary: "Node down"
-#           description: "*Details:* The node *{{ .Labels.instance }}* is down."
-
-#       - alert: ContainerDown
-#         expr: increase(container_last_seen[5m]) == 0
-#         for: 5m
-#         labels:
-#           severity: critical
-#         annotations:
-#           summary: "Container down"
-#           description: "*Details:* The container *{{ .Labels.name }}* on host *{{ .Labels.instance }}* is down."
+          
+          
+          #templates:
+          #  - /etc/alertmanager/templates/slack.tmpl

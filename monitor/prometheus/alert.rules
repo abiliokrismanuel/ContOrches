@@ -1,50 +1,38 @@
 groups:
-- name: node-and-container-alerts-swarm
-  rules:
-  # Rule for Node Down in Swarm
-  - alert: NodeDownSwarm
-    expr: up{job="node-exporter-swarm"} == 0
-    labels:
-      severity: critical
-    annotations:
-      summary: "Node {{ $labels.instance }} is down"
-      description: "Node {{ $labels.instance }} has been down since {{ $value }}."
+  - name: node-and-container-alerts
+    rules:
+      # Alert ketika Node di Swarm mati
+      - alert: NodeDownSwarm
+        expr: up{job="node-exporter-swarm"} == 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "Swarm Node {{ $labels.instance }} is down"
+          description: "Swarm Node {{ $labels.instance }} is currently down."
 
-  # Rule for Node Up in Swarm (resolved alert)
-  - alert: NodeUpSwarm
-    expr: up{job="node-exporter-swarm"} == 1
-    labels:
-      severity: normal
-    annotations:
-      summary: "Node {{ $labels.instance }} is back up"
-      description: "Node {{ $labels.instance }} is back up after being down."
-      recovery_time: '{{ $value }}'  # Placeholder for recovery time
+      # Alert ketika Container di Swarm mati
+      - alert: ContainerDownSwarm
+        expr: up{job="cadvisor-swarm"} == 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container {{ $labels.container_name }} on Swarm Node {{ $labels.instance }} is down"
+          description: "Container {{ $labels.container_name }} on Swarm Node {{ $labels.instance }} is currently down."
 
-  # Rule for Container Down in Swarm
-  - alert: ContainerDownSwarm
-    expr: up{job="cadvisor-swarm"} == 0
-    labels:
-      severity: critical
-    annotations:
-      summary: "Container {{ $labels.container_name }} on {{ $labels.instance }} is down"
-      description: "Container {{ $labels.container_name }} on {{ $labels.instance }} has been down since {{ $value }}."
+      # Alert ketika Node di Kubernetes mati
+      - alert: NodeDownKube
+        expr: up{job="node-exporter-kube"} == 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kubernetes Node {{ $labels.instance }} is down"
+          description: "Kubernetes Node {{ $labels.instance }} is currently down."
 
-  # Rule for Container Up in Swarm (resolved alert)
-  - alert: ContainerUpSwarm
-    expr: up{job="cadvisor-swarm"} == 1
-    labels:
-      severity: normal
-    annotations:
-      summary: "Container {{ $labels.container_name }} on {{ $labels.instance }} is back up"
-      description: "Container {{ $labels.container_name }} on {{ $labels.instance }} is back up after being down."
-      recovery_time: '{{ $value }}'  # Placeholder for recovery time
-
-- name: recovery-rules
-  rules:
-  # Recording rule for Node Down Duration
-  - record: node:down_duration_seconds
-    expr: (time() - max_over_time((up{job="node-exporter-swarm"} == 0)[1s:]))
-
-  # Recording rule for Container Down Duration
-  - record: container:down_duration_seconds
-    expr: (time() - max_over_time((up{job="cadvisor-swarm"} == 0)[1s:]))
+      # Alert ketika Container di Kubernetes mati
+      - alert: ContainerDownKube
+        expr: up{job="cadvisor-kube"} == 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container {{ $labels.container_name }} on Kubernetes Node {{ $labels.instance }} is down"
+          description: "Container {{ $labels.container_name }} on Kubernetes Node {{ $labels.instance }} is currently down."

@@ -34,10 +34,10 @@ sudo apt install nfs-common -y
 sudo mkdir -p /home/ubuntu/swarm/efs-docker
 
 # Langkah 9: Memastikan Memory Overcommit diaktifkan (redis warning fix)
-echo "Mengaktifkan memory overcommit..."
-sudo sysctl -w vm.overcommit_memory=1
-sudo sh -c 'echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf'
-sudo sysctl -p
+# echo "Mengaktifkan memory overcommit..."
+# sudo sysctl -w vm.overcommit_memory=1
+# sudo sh -c 'echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf'
+# sudo sysctl -p
 
 # Langkah 5 (Opsional): Izinkan user saat ini menjalankan perintah Docker tanpa sudo
 echo "Menambahkan user saat ini ke grup Docker..."
